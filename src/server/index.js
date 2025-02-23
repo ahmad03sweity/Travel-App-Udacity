@@ -1,23 +1,25 @@
-const express = require("express")
+import express from "express";
+import cors from "cors";
+
 const app = express();
-const cors = require("cors");
 
 //read the json files coming to you
 app.use(express.json())
 app.use(express.static('dist'))
 
-//require dotenv
+import dotenv from "dotenv";
+dotenv.config();
 require("dotenv").config()
-
-//get the city function which get location from geoNames
-const  {getCityLoc} = require("./getCityLoc")
+import { getCityLoc } from "./getCityLoc";
+import { weatherTemp } from "./weatherTemp";
+import { getCityPic } from "./getCityPic";
 const {weatherTemp} = require("./weatherTemp")
 const {getCityPic} = require("./getCityPic")
 
 //using cors
 app.use(cors())
 
-port = 8000
+const port = 8080
 
 //I had to fix an issue with the env file that it doesn't want to get the integers in my username so i made
 // a separate const for them
@@ -26,10 +28,11 @@ const usernumber = process.env.USERNUMBER
 const WEATHER_KEY = process.env.WEATHER_KEY
 const pixabay_key = process.env.pixabay_key
 const username = userstring.concat(usernumber)
-
+// app.get("/", (res) => {
 
 app.get("/", (req, res) => {
-  res.render("index.html")
+  console.log(req.headers);
+  res.render("index.html");
 })
 
 app.post("/getCity", async (req,res) => {
