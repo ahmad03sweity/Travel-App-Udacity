@@ -1,9 +1,9 @@
 const commonConfig = require("./webpack.common.js"),
-    { mergeConfigs } = require("webpack-merge"),
+    { merge  } = require("webpack-merge"),
     CssMinimizer = require("css-minimizer-webpack-plugin"),
     pathModule = require("path");
 
-module.exports = mergeConfigs(commonConfig, {
+module.exports = merge (commonConfig, {
     mode: "development",
     devtool: "source-map",
     module: {
