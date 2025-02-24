@@ -1,17 +1,14 @@
-const axios = require("axios")
+import axios from "axios";
 
-
-const getCityLoc = async(city, username) => {
-    const {data} = await axios.get(`https://secure.geonames.org/searchJSON?q=${city}&maxRows=1&username=${username}`)
+export const getCityLoc = async (city, username) => {
+    const { data } = await axios.get(`https://secure.geonames.org/searchJSON?q=${city}&maxRows=1&username=${username}`);
     
-    if(!data.geonames.length){
+    if (!data.geonames.length) {
         const errMsg = {
             message: "No city with that name. Please make sure of your spelling",
             error: true
-        }
-        return errMsg
+        };
+        return errMsg;
     }
-    return data.geonames[0]
-}
-
-module.exports =  {getCityLoc}
+    return data.geonames[0];
+};
