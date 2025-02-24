@@ -31,6 +31,13 @@ The application relies on the following dependencies:
 
 ## Getting Started
 
+### Prerequisites
+
+- Node.js (version 22.12.0 or higher)
+- npm (Node Package Manager)
+
+### Installation
+
 To get started with the project, follow these steps:
 
 1. Clone the repository:
@@ -48,7 +55,12 @@ To get started with the project, follow these steps:
   npm install
   ```
 
-4. Start the development server:
+4. Create a `.env` file in the root directory and add the following details:
+  ```sh
+  API_KEY=f30edf494a814d6bad7b15354c8111e2
+  ```
+
+5. Start the development server:
   ```sh
   npm start
   ```
