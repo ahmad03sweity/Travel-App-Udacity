@@ -1,11 +1,11 @@
-const ExtractCssPlugin = require("mini-css-extract-plugin"),
-    MinifyJsPlugin = require("terser-webpack-plugin"),
-    pathModule = require("path"),
-    commonConfig = require("./webpack.common.js");
-const { merge } = require("webpack-merge"),
-    MinifyCssPlugin = require("css-minimizer-webpack-plugin");
+import ExtractCssPlugin from "mini-css-extract-plugin";
+import MinifyJsPlugin from "terser-webpack-plugin";
+import pathModule from "path";
+import { commonConfig } from "./webpack.common.js";
+import { merge } from "webpack-merge";
+import MinifyCssPlugin from "css-minimizer-webpack-plugin";
 
-module.exports = merge(commonConfig, {
+export default merge(commonConfig, {
     mode: "production",
     devtool: "hidden-source-map",
     module: {
@@ -18,7 +18,7 @@ module.exports = merge(commonConfig, {
     },
     output: {
         filename: 'bundle.[contenthash].js',
-        path: pathModule.resolve(__dirname, 'dist'),
+        path: pathModule.resolve(pathModule.dirname(new URL(import.meta.url).pathname).substring(1), 'dist'),
         libraryTarget: 'var',
         library: 'Client',
         clean: true,
@@ -37,4 +37,4 @@ module.exports = merge(commonConfig, {
             filename: 'style.[contenthash].css'
         })
     ]
-})
+});

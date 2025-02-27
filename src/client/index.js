@@ -1,7 +1,7 @@
 
 import "./public/style/style.scss"
 
-import { handleSubmit } from "./script/handleForm";
+import { handleSubmit } from "./script/handleForm.js";
 
 
 

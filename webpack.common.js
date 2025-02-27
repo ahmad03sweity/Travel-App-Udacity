@@ -1,9 +1,8 @@
-let webpack = require("webpack"),
-    htmlWebpackPlugin = require("html-webpack-plugin"),
-    { CleanWebpackPlugin } = require('clean-webpack-plugin'),
-    CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+import htmlWebpackPlugin from "html-webpack-plugin";
+import { CleanWebpackPlugin } from 'clean-webpack-plugin';
+import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
 
-module.exports = {
+export const commonConfig = {
     entry: ["./src/client/index.js"],
     module: {
         rules: [
