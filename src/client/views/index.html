@@ -28,14 +28,14 @@
   </head>
   <body>
     <div
-      class="container d-flex flex-column justify-content-center align-items-center text-center py-3"
-      width="100"
+      class="wrapper d-flex flex-column justify-content-center align-items-center text-center py-3"
+      style="width: 100%"
     >
-      <header class="site-header align-self-lg-start mb-5">
-        <h1 class="site-title">Where do you wanna Go?</h1>
+      <header class="main-header align-self-lg-start mb-5">
+        <h1 class="main-title">Where do you wanna Go?</h1>
       </header>
       <div
-        id="form_row"
+        id="input_section"
         class="row d-flex flex-column justify-content-center align-items-center mt-5"
       >
         <div class="col">
@@ -48,7 +48,7 @@
               <input
                 class="form-control form-control-lg"
                 type="text"
-                id="city"
+                id="destination"
                 name="city"
                 placeholder="Enter your Destination"
                 aria-label="City"
@@ -57,7 +57,7 @@
             </div>
             <!-- Error message for invalid city input -->
             <div
-              id="city_error"
+              id="destination_error"
               class="alert alert-danger form-text text-start py-2 mt-2"
               role="alert"
             ></div>
@@ -66,13 +66,13 @@
               <input
                 class="form-control form-control-lg"
                 type="date"
-                id="flightDate"
+                id="travelDate"
                 name="date"
               />
             </div>
             <!-- Error message for invalid date input -->
             <div
-              id="date_error"
+              id="date_error_msg"
               class="alert alert-danger form-text text-start py-2 mt-2"
               role="alert"
             >
@@ -84,15 +84,15 @@
             </button>
           </form>
         </div>
-        <div class="col flight_data my-5">
+        <div class="col travel_data my-5">
           <!-- Display retrieved travel data -->
-          <h2 id="Rdays"></h2>
-          <p class="cityName"></p>
-          <p class="temp"></p>
-          <p class="max-temp"></p>
-          <p class="min-temp"></p>
-          <p class="weather"></p>
-          <div class="cityPic"></div>
+          <h2 id="remaining_days"></h2>
+          <p class="locationName"></p>
+          <p class="temperature"></p>
+          <p class="max-temperature"></p>
+          <p class="min-temperature"></p>
+          <p class="weather_condition"></p>
+          <div class="locationPic"></div>
         </div>
       </div>
     </div>

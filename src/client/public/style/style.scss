@@ -7,40 +7,40 @@
 body {
   background-attachment: fixed;
   background-image: url("../images/yuriy-kovalev-nN1HSDtKdlw-unsplash.jpg");
-  // background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
   font-family: "REM", sans-serif;
 
-  .container {
+  .wrapper {
     min-height: 100vh;
-    .site-header {
+
+    .main-header {
       background-color: #333;
       color: #fff;
       padding: 20px;
 
-      .site-title {
+      .main-title {
         font-size: 23px;
         @include bp.respond-to("sm") {
           font-size: 48px;
         }
-        & {
-          margin: 0;
-          text-align: center;
-          text-transform: uppercase;
-        }
+        margin: 0;
+        text-align: center;
+        text-transform: uppercase;
       }
     }
 
-    #form_row {
+    #input_section {
       width: 90%;
       @include bp.respond-to("lg") {
         width: 50%;
       }
-      #city_error {
+
+      #destination_error {
         display: none;
       }
-      #date_error {
+
+      #date_error_msg {
         display: none;
       }
     }

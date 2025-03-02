@@ -1,11 +1,11 @@
 import axios from "axios";
 
 const formElement = document.querySelector("form");
-const cityInput = document.querySelector("#city");
-const dateInput = document.querySelector("#flightDate");
+const cityInput = document.querySelector("#destination");
+const dateInput = document.querySelector("#travelDate");
 
-const cityError = document.querySelector("#city_error");
-const dateError = document.querySelector("#date_error");
+const cityError = document.querySelector("#destination_error");
+const dateError = document.querySelector("#date_error_msg");
 
 const handleSubmit = async (e) => {
   e.preventDefault();
@@ -138,20 +138,20 @@ const getCityPic = async (city_name) => {
 };
 
 const updateUI = (Rdays, city, pic, weather) => {
-  document.querySelector("#Rdays").innerHTML = `Your trip starts in ${Rdays} days from now`;
-  document.querySelector(".cityName").innerHTML = `Location: ${city}`;
-  document.querySelector(".weather").innerHTML =
+  document.querySelector("#remaining_days").innerHTML = `Your trip starts in ${Rdays} days from now`;
+  document.querySelector(".locationName").innerHTML = `Location: ${city}`;
+  document.querySelector(".weather_condition").innerHTML =
     Rdays > 7 ? `Weather is: ${weather.description}` : `Weather is expected to be: ${weather.description}`;
-  document.querySelector(".temp").innerHTML =
+  document.querySelector(".temperature").innerHTML =
     Rdays > 7 ? `Forecast: ${weather.temp}&degC` : `Temperature: ${weather.temp} &deg C`;
-  document.querySelector(".max-temp").innerHTML =
+  document.querySelector(".max-temperature").innerHTML =
     Rdays > 7 ? `Max-Temp: ${weather.app_max_temp}&degC` : "";
-  document.querySelector(".min-temp").innerHTML =
+  document.querySelector(".min-temperature").innerHTML =
     Rdays > 7 ? `Min-Temp: ${weather.app_min_temp}&degC` : "";
-  document.querySelector(".cityPic").innerHTML = `
+  document.querySelector(".locationPic").innerHTML = `
     <img src="${pic}" alt="An image that describes the city nature">
   `;
-  document.querySelector(".flight_data").style.display = "block";
+  document.querySelector(".travel_data").style.display = "block";
 };
 
 export { handleSubmit };
