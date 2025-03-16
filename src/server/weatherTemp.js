@@ -1,30 +1,39 @@
 import axios from "axios";
 
-export const weatherTemp = async (lo, la, Rdays, key) => {
+export const weatherTemp = (lo, la, Rdays, key) => {
     if (Rdays < 0) {
-        const errMsg = {
+        return Promise.resolve({
             message: "Date cannot be in the past",
             error: true
-        };
-        return errMsg;
+        });
     }
 
-    if (Rdays > 0 && Rdays <= 7) {
-        const { data } = await axios.get(`https://api.weatherbit.io/v2.0/current?lat=${la}&lon=${lo}&units=M&key=${key}`);
-        console.log("******************************************************");
-        const { weather, temp } = data.data[data.data.length - 1];
-        const { description } = weather;
-        const weather_data = { description, temp };
-        console.log(weather_data);
-        console.log("******************************************************");
-        return weather_data;
-    } else if (Rdays > 7) {
-        const { data } = await axios.get(`https://api.weatherbit.io/v2.0/forecast/daily?lat=${la}&lon=${lo}&units=M&days=${Rdays}&key=${key}`);
-        console.log("******************************************************");
-        const { weather, temp, app_max_temp, app_min_temp } = data.data[data.data.length - 1];
-        const { description } = weather;
-        const weather_data = { description, temp, app_max_temp, app_min_temp };
-        console.log("******************************************************");
-        return weather_data;
-    }
+    const url = Rdays > 7
+        ? `https://api.weatherbit.io/v2.0/forecast/daily?lat=${la}&lon=${lo}&units=M&days=${Rdays}&key=${key}`
+        : `https://api.weatherbit.io/v2.0/current?lat=${la}&lon=${lo}&units=M&key=${key}`;
+
+    return axios.get(url)
+        .then((response) => {
+            console.log("******************************************************");
+            const data = response.data.data;
+            const lastData = data[data.length - 1];
+
+            const { weather, temp, app_max_temp, app_min_temp } = lastData;
+            const { description } = weather;
+
+            const weather_data = Rdays > 7 
+                ? { description, temp, app_max_temp, app_min_temp }
+                : { description, temp };
+
+            console.log(weather_data);
+            console.log("******************************************************");
+            return weather_data;
+        })
+        .catch((error) => {
+            console.error("Error fetching weather data:", error);
+            return {
+                message: "Failed to fetch weather data",
+                error: true
+            };
+        });
 };

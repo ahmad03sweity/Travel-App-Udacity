@@ -7,7 +7,7 @@ const dateInput = document.querySelector("#travelDate");
 const cityError = document.querySelector("#destination_error");
 const dateError = document.querySelector("#date_error_msg");
 
-const handleSubmit = async (e) => {
+const handleSubmit = (e) => {
   e.preventDefault();
 
   // Checking if the function is working fine
@@ -18,15 +18,15 @@ const handleSubmit = async (e) => {
     return;
   }
 
-  try {
-    // Get the locationData first and make sure call is successful
-    const locationData = await getCityLoc();
-    if (locationData && locationData.error) {
-      // Handling the error coming from the server-side
-      cityError.innerHTML = `<i class="bi bi-exclamation-circle-fill me-2"></i>${locationData.message}`;
-      cityError.style.display = "block";
-      return;
-    } else if (locationData && !locationData.error) {
+  // Get the locationData first and make sure call is successful
+  getCityLoc()
+    .then((locationData) => {
+      if (locationData && locationData.error) {
+        cityError.innerHTML = `<i class="bi bi-exclamation-circle-fill me-2"></i>${locationData.message}`;
+        cityError.style.display = "block";
+        return Promise.reject(); // الخروج من السلسلة مبكرًا عند وجود خطأ
+      }
+
       // Extract longitude and latitude
       const { lng, lat, name } = locationData;
 
@@ -38,7 +38,7 @@ const handleSubmit = async (e) => {
         console.log("Please enter the date");
         dateError.innerHTML = `<i class="bi bi-exclamation-circle-fill me-2"></i>Please enter the date`;
         dateError.style.display = "block";
-        return;
+        return Promise.reject(); // الخروج من السلسلة
       }
 
       if (lng && lat) {
@@ -46,23 +46,28 @@ const handleSubmit = async (e) => {
         const remainingDays = getRdays(date);
 
         // Get the weather data
-        const weather = await getWeather(lng, lat, remainingDays);
-        if (weather && weather.error) {
-          dateError.innerHTML = `<i class="bi bi-exclamation-circle-fill me-2"></i>${weather.message}`;
-          dateError.style.display = "block";
-          return;
-        }
+        return getWeather(lng, lat, remainingDays).then((weather) => {
+          if (weather && weather.error) {
+            dateError.innerHTML = `<i class="bi bi-exclamation-circle-fill me-2"></i>${weather.message}`;
+            dateError.style.display = "block";
+            return Promise.reject();
+          }
 
-        // Get the picture of the place
-        const pic = await getCityPic(name);
-        updateUI(remainingDays, name, pic, weather);
+          // Get the picture of the place
+          return getCityPic(name).then((pic) => {
+            updateUI(remainingDays, name, pic, weather);
+          });
+        });
       }
-    }
-  } catch (error) {
-    dateError.innerHTML = `<i class="bi bi-exclamation-circle-fill me-2"></i>Network Error: ${error.message}`;
-    dateError.style.display = "block";
-  }
+    })
+    .catch((error) => {
+      if (error) {
+        dateError.innerHTML = `<i class="bi bi-exclamation-circle-fill me-2"></i>Network Error: ${error.message}`;
+        dateError.style.display = "block";
+      }
+    });
 };
+
 
 const validate_inputs = () => {
   cityError.style.display = "none";
@@ -85,36 +90,33 @@ const validate_inputs = () => {
   return true;
 };
 
-const getCityLoc = async () => {
+const getCityLoc = () => {
   if (cityInput.value) {
-    try {
-      const formData = new FormData(formElement);
-      const jsonData = Object.fromEntries(formData.entries());
-      const { data } = await axios.post("http://localhost:8000/getCity", jsonData, {
+    const formData = new FormData(formElement);
+    const jsonData = Object.fromEntries(formData.entries());
+
+    return axios
+      .post("http://localhost:8000/getCity", jsonData, {
         headers: {
           "Content-Type": "application/json",
         },
+      })
+      .then((response) => response.data)
+      .catch((error) => {
+        dateError.innerHTML = `<i class="bi bi-exclamation-circle-fill me-2"></i>Network Error: ${error.message}`;
+        dateError.style.display = "block";
       });
-      return data;
-    } catch (error) {
-      dateError.innerHTML = `<i class="bi bi-exclamation-circle-fill me-2"></i>Network Error: ${error.message}`;
-      dateError.style.display = "block";
-    }
   }
 };
 
-const getWeather = async (lng, lat, remainingDays) => {
-  try {
-    const { data } = await axios.post("http://localhost:8000/getWeather", {
-      lng,
-      lat,
-      remainingDays,
+const getWeather = (lng, lat, remainingDays) => {
+  return axios
+    .post("http://localhost:8000/getWeather", { lng, lat, remainingDays })
+    .then((response) => response.data)
+    .catch((error) => {
+      dateError.innerHTML = `<i class="bi bi-exclamation-circle-fill me-2"></i>Network Error: ${error.message}`;
+      dateError.style.display = "block";
     });
-    return data;
-  } catch (error) {
-    dateError.innerHTML = `<i class="bi bi-exclamation-circle-fill me-2"></i>Network Error: ${error.message}`;
-    dateError.style.display = "block";
-  }
 };
 
 const getRdays = (date) => {
@@ -125,33 +127,43 @@ const getRdays = (date) => {
   return daysDiff;
 };
 
-const getCityPic = async (city_name) => {
-  try {
-    const { data } = await axios.post("http://localhost:8000/getCityPic", {
-      city_name,
+const getCityPic = (city_name) => {
+  return axios
+    .post("http://localhost:8000/getCityPic", { city_name })
+    .then((response) => response.data.image)
+    .catch((error) => {
+      dateError.innerHTML = `<i class="bi bi-exclamation-circle-fill me-2"></i>Network Error: ${error.message}`;
+      dateError.style.display = "block";
     });
-    return data.image;
-  } catch (error) {
-    dateError.innerHTML = `<i class="bi bi-exclamation-circle-fill me-2"></i>Network Error: ${error.message}`;
-    dateError.style.display = "block";
-  }
 };
 
 const updateUI = (Rdays, city, pic, weather) => {
-  document.querySelector("#remaining_days").innerHTML = `Your trip starts in ${Rdays} days from now`;
-  document.querySelector(".locationName").innerHTML = `Location: ${city}`;
-  document.querySelector(".weather_condition").innerHTML =
-    Rdays > 7 ? `Weather is: ${weather.description}` : `Weather is expected to be: ${weather.description}`;
-  document.querySelector(".temperature").innerHTML =
-    Rdays > 7 ? `Forecast: ${weather.temp}&degC` : `Temperature: ${weather.temp} &deg C`;
-  document.querySelector(".max-temperature").innerHTML =
-    Rdays > 7 ? `Max-Temp: ${weather.app_max_temp}&degC` : "";
-  document.querySelector(".min-temperature").innerHTML =
-    Rdays > 7 ? `Min-Temp: ${weather.app_min_temp}&degC` : "";
-  document.querySelector(".locationPic").innerHTML = `
-    <img src="${pic}" alt="An image that describes the city nature">
-  `;
-  document.querySelector(".travel_data").style.display = "block";
+  const elements = {
+    remainingDays: document.querySelector("#remaining_days"),
+    locationName: document.querySelector(".locationName"),
+    weatherCondition: document.querySelector(".weather_condition"),
+    temperature: document.querySelector(".temperature"),
+    maxTemperature: document.querySelector(".max-temperature"),
+    minTemperature: document.querySelector(".min-temperature"),
+    locationPic: document.querySelector(".locationPic"),
+    travelData: document.querySelector(".travel_data"),
+  };
+
+  elements.remainingDays.innerHTML = `Your trip starts in ${Rdays} days from now`;
+  elements.locationName.innerHTML = `Location: ${city}`;
+
+  const weatherText = Rdays > 7 ? "Weather is" : "Weather is expected to be";
+  elements.weatherCondition.innerHTML = `${weatherText}: ${weather.description}`;
+
+  const temperatureText = Rdays > 7 ? "Forecast" : "Temperature";
+  elements.temperature.innerHTML = `${temperatureText}: ${weather.temp}&degC`;
+
+  elements.maxTemperature.innerHTML = Rdays > 7 ? `Max-Temp: ${weather.app_max_temp}&degC` : "";
+  elements.minTemperature.innerHTML = Rdays > 7 ? `Min-Temp: ${weather.app_min_temp}&degC` : "";
+
+  elements.locationPic.innerHTML = `<img src="${pic}" alt="An image that describes the city nature">`;
+
+  elements.travelData.style.display = "block";
 };
 
 export { handleSubmit };
